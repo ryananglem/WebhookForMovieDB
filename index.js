@@ -16,5 +16,5 @@ server.use(routes)
 
 const port = 8000
 server.listen((process.env.PORT || port), () => {
-    console.log("Server is up and running on port " + port);
+    console.log("Server is up and running on port " + port)
 })

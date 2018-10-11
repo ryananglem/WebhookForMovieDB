@@ -7,6 +7,6 @@ import v2 from './v2'
 const routes = express.Router()
 
 routes.use('/v1/', v1)
-// routes.use('/v2/', v2)
+routes.use('/v2/', v2)
 
 export default routes
