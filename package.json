@@ -15,12 +15,13 @@
   "author": "ryan anglem - forked from repo by Siddharth Ajmera (SiddAjmera)",
   "license": "ISC",
   "dependencies": {
-    "body-parser": "^1.18.2",
-    "express": "^4.16.1",
-    "babel-cli": "^6.24.1",
+    "actions-on-google": "^2.4.1",
     "babel": "^6.23.0",
+    "babel-cli": "^6.24.1",
     "babel-preset-env": "^1.6.1",
     "babel-watch": "^2.0.7",
+    "body-parser": "^1.18.2",
+    "express": "^4.16.1",
     "nodemon": "^1.17.2"
   },
   "devDependencies": {}

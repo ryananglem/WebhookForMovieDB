@@ -3,12 +3,14 @@
 import express from 'express'
 import http from 'http'
 import API_KEY from '../../apiKey'
+// import { dialogflow } from 'actions-on-google'
 
 const server = express.Router({mergeParams: true})
 
 server.post('/get-movie-details', (req, res) => {
 
-    const movieToSearch = req.body.result && req.body.result.parameters && req.body.result.parameters.movie ? req.body.result.parameters.movie : 'The Godfather'
+    const movieToSearch = req.body.queryResult && req.body.queryResult.queryText && req.body.queryResult.parameters ? req.body.queryResult.parameters.movie : 'The Godfather'
+    console.log(req.body)
     const reqUrl = encodeURI(`http://www.omdbapi.com/?t=${movieToSearch}&apikey=${API_KEY}`);
     http.get(reqUrl, (responseFromAPI) => {
         let completeResponse = '';
