@@ -42,7 +42,9 @@ server.post('/get-movie-details', (req, res) => {
             return res.json({
                 "fulfillmentText": dataToSend,
                 "fulfillmentMessages": [
-                  { "text": [ dataToSend ] },  
+                  { "text": {
+                      "text": [ dataToSend ] },  
+                  },
                   {
                     "card": {
                       "title": "card title",
