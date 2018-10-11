@@ -8,6 +8,23 @@ import API_KEY from '../../apiKey'
 const server = express.Router({mergeParams: true})
 
 server.post('/get-movie-details', (req, res) => {
+/*
+    const req = {body: 
+     { responseId: '097bac51-1d9c-475c-befa-533adf2a878d',
+     queryResult:
+     { queryText: 'tell me about the dark knight',
+     parameters: { movie: 'The Dark Knight' },
+     allRequiredParamsPresent: true,
+     fulfillmentMessages: [ [Object] ],
+     intent:
+     { name: 'projects/dialogflow-elective-moviedb-dn/agent/intents/569f4239-9fc5-4d38-b92e-386c6ee94256',
+     displayName: 'movie-intent' },
+     intentDetectionConfidence: 1,
+     languageCode: 'en' },
+     originalDetectIntentRequest: { payload: {} },
+     session: 'projects/dialogflow-elective-moviedb-dn/agent/sessions/d1d15d2c-d7eb-58cd-8232-0239fed42277' }
+    }
+*/
 
     const movieToSearch = req.body.queryResult && req.body.queryResult.queryText && req.body.queryResult.parameters ? req.body.queryResult.parameters.movie : 'The Godfather'
     console.log(req.body)
@@ -25,6 +42,7 @@ server.post('/get-movie-details', (req, res) => {
             return res.json({
                 "fulfillmentText": dataToSend,
                 "fulfillmentMessages": [
+                  { "text": [ dataToSend ] },  
                   {
                     "card": {
                       "title": "card title",
