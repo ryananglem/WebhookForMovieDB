@@ -28,6 +28,8 @@ server.post('/get-movie-details', (req, res) => {
   
   const movieToSearch = req.body.queryResult && req.body.queryResult.queryText && req.body.queryResult.parameters ? req.body.queryResult.parameters.movie : 'The Godfather'
     console.log(req.body)
+    const contexts = req.body.queryResult.outputContexts.toString()
+    console.log(contexts)
     const reqUrl = encodeURI(`http://www.omdbapi.com/?t=${movieToSearch}&apikey=${API_KEY}`)
     http.get(reqUrl, (responseFromAPI) => {
         let completeResponse = '';
