@@ -27,7 +27,7 @@ server.post('/get-movie-details', (req, res) => {
 */
   
   const movieToSearch = req.body.queryResult && req.body.queryResult.queryText && req.body.queryResult.parameters ? req.body.queryResult.parameters.movie : 'The Godfather'
-    console.log(req)
+    console.log(req.body)
     const reqUrl = encodeURI(`http://www.omdbapi.com/?t=${movieToSearch}&apikey=${API_KEY}`)
     http.get(reqUrl, (responseFromAPI) => {
         let completeResponse = '';
@@ -56,11 +56,10 @@ server.post('/get-movie-details', (req, res) => {
                   }
                 },
                 "outputContexts": [{
-                  "name": "projects/Dialogflow-elective-MovieDBAgent/agent/sessions/testid/contexts/context name",
+                  "name": "projects/Dialogflow-elective-MovieDBAgent/agent/sessions/testid/contexts/movie-intent-followup",
                   "lifespanCount": 5,
                   "parameters": {
-                    "param": "movie-intent-followup",
-                    "param": "more-info"
+                    "param": "movie"
                   }
                 }
                 ]
