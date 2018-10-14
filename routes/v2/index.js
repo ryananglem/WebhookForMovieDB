@@ -45,9 +45,8 @@ server.post('/get-movie-details', (req, res) => {
 })            
 
 const getMovieDetails = (req, res) => {
-  const movieToSearch = req.body.queryResult.outputContexts[1].parameters.movie
-  console.log("movie to search", movieToSearch)
-  console.log(JSON.stringify(req.body.queryResult))
+  const movieToSearch = req.body.queryResult && req.body.queryResult.queryText && req.body.queryResult.parameters ? req.body.queryResult.parameters.movie : 'The Godfather'
+ 
   const reqUrl = encodeURI(`http://www.omdbapi.com/?t=${movieToSearch}&apikey=${API_KEY}`)
   http.get(reqUrl, (responseFromAPI) => {
       let completeResponse = '';
@@ -90,10 +89,11 @@ const getMovieDetails = (req, res) => {
 
 const getMoreMovieDetails = (req, res) => {
 
-  req.body.queryResult.intent
+  const movieToSearch = req.body.queryResult.intent
 
-  const movieToSearch = req.body.queryResult && req.body.queryResult.queryText && req.body.queryResult.parameters ? req.body.queryResult.parameters.movie : 'The Godfather'
-      
+  console.log("movie to search", movieToSearch)
+  console.log(JSON.stringify(req.body.queryResult))
+
   const reqUrl = encodeURI(`http://www.omdbapi.com/?t=${movieToSearch}&apikey=${API_KEY}`)
   http.get(reqUrl, (responseFromAPI) => {
       let completeResponse = '';
