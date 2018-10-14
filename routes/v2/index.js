@@ -56,7 +56,7 @@ server.post('/get-movie-details', (req, res) => {
                   }
                 },
                 "outputContexts": [{
-                  "name": "projects/Dialogflow-elective-MovieDBAgent/agent/sessions/${SESSION_ID}/contexts/context name",
+                  "name": "projects/Dialogflow-elective-MovieDBAgent/agent/sessions/testid/contexts/context name",
                   "lifespanCount": 5,
                   "parameters": {
                     "param": "movie-intent-followup",
