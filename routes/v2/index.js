@@ -8,9 +8,26 @@ import API_KEY from '../../apiKey'
 const server = express.Router({mergeParams: true})
 
 server.post('/get-movie-details', (req, res) => {
-
+/*
+  const req = {body: 
+    { responseId: '097bac51-1d9c-475c-befa-533adf2a878d',
+    queryResult:
+    { queryText: 'tell me about the dark knight',
+    parameters: { movie: 'The Dark Knight' },
+    allRequiredParamsPresent: true,
+    fulfillmentMessages: [ [Object] ],
+    intent:
+    { name: 'projects/dialogflow-elective-moviedb-dn/agent/intents/569f4239-9fc5-4d38-b92e-386c6ee94256',
+    displayName: 'movie-intent' },
+    intentDetectionConfidence: 1,
+    languageCode: 'en' },
+    originalDetectIntentRequest: { payload: {} },
+    session: 'projects/dialogflow-elective-moviedb-dn/agent/sessions/d1d15d2c-d7eb-58cd-8232-0239fed42277' }
+   }
+*/
+  
   const movieToSearch = req.body.queryResult && req.body.queryResult.queryText && req.body.queryResult.parameters ? req.body.queryResult.parameters.movie : 'The Godfather'
-    
+    console.log(JSON.parse(req).toString())
     const reqUrl = encodeURI(`http://www.omdbapi.com/?t=${movieToSearch}&apikey=${API_KEY}`)
     http.get(reqUrl, (responseFromAPI) => {
         let completeResponse = '';
@@ -22,7 +39,7 @@ server.post('/get-movie-details', (req, res) => {
             let dataToSend = movieToSearch === 'The Godfather' ? `I don't have the required info on that. Here's some info on 'The Godfather' instead.\n` : ''
             dataToSend += `${movie.Title} staring ${movie.Actors} is a ${movie.Genre} movie, released in ${movie.Year}. It was directed by ${movie.Director}. Would you like to know more?`
 
-            return res.json({
+            return res.json({              
                 "payload": {
                   "google": {
                     "expectUserResponse": true,
@@ -37,56 +54,64 @@ server.post('/get-movie-details', (req, res) => {
                       ]
                     }
                   }
+                },
+                "outputContexts": [{
+                  "name": "projects/Dialogflow-elective-MovieDBAgent/agent/sessions/${SESSION_ID}/contexts/context name",
+                  "lifespanCount": 5,
+                  "parameters": {
+                    "param": "movie-intent-followup",
+                    "param": "more-info"
+                  }
                 }
+                ]
               })
         })
     })
 })            
 
-server.post('/get-more-movie-details', (req, res) => {
+const getMoreMovieDetails = (req, res) => {
 
   const movieToSearch = req.body.queryResult && req.body.queryResult.queryText && req.body.queryResult.parameters ? req.body.queryResult.parameters.movie : 'The Godfather'
-    
-    const reqUrl = encodeURI(`http://www.omdbapi.com/?t=${movieToSearch}&apikey=${API_KEY}`)
-    http.get(reqUrl, (responseFromAPI) => {
-        let completeResponse = '';
-        responseFromAPI.on('data', (chunk) => {
-            completeResponse += chunk;
-        });
-        responseFromAPI.on('end', () => {
-            const movie = JSON.parse(completeResponse);
-            
-            let dataToSend
-            if (movie.Awards) {
-                dataToSend =`${movie.Title} has won the following awards, ${movie.Awards}` 
+      
+  const reqUrl = encodeURI(`http://www.omdbapi.com/?t=${movieToSearch}&apikey=${API_KEY}`)
+  http.get(reqUrl, (responseFromAPI) => {
+      let completeResponse = '';
+      responseFromAPI.on('data', (chunk) => {
+          completeResponse += chunk;
+      });
+      responseFromAPI.on('end', () => {
+          const movie = JSON.parse(completeResponse);
+          
+          let dataToSend
+          if (movie.Awards) {
+              dataToSend =`${movie.Title} has won the following awards, ${movie.Awards}` 
+            } else {
+              if (movie.Ratings && movie.Ratings.length > 0) { 
+                dataToSend = `${movie.Title} scored ${movie.Ratings[0].Value} by ${movie.Ratings[0].Source}`
               } else {
-                if (movie.Ratings && movie.Ratings.length > 0) { 
-                  dataToSend = `${movie.Title} scored ${movie.Ratings[0].Value} by ${movie.Ratings[0].Source}`
-                } else {
-                  dataToSend = `I dont have any awards or rating data for ${movie.Title}`
-                }
-            }               
-            
-            return res.json({
-                "payload": {
-                  "google": {
-                    "expectUserResponse": false,
-                    "richResponse": {
-                      "items": [
-                        {
-                          "simpleResponse": {
-                            "textToSpeech": dataToSend,
-                            "displayText": dataToSend
-                          }
+                dataToSend = `I dont have any awards or rating data for ${movie.Title}`
+              }
+          }               
+          
+          return res.json({
+              "payload": {
+                "google": {
+                  "expectUserResponse": false,
+                  "richResponse": {
+                    "items": [
+                      {
+                        "simpleResponse": {
+                          "textToSpeech": dataToSend,
+                          "displayText": dataToSend
                         }
-                      ]
-                    }
+                      }
+                    ]
                   }
                 }
-              })
-        })
-    })
-})
-
+              }
+            })
+      })
+  })
+}
 export default server
 
