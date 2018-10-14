@@ -9,6 +9,15 @@ const server = express.Router({mergeParams: true})
 
 server.post('/get-movie-details', (req, res) => {
 
+  console.log(req.body)
+  let contexts
+  if (req.body.queryResult.outputContexts) {
+    req.body.queryResult.outputContexts.forEach(element => {
+      contexts += JSON.stringify(element)
+   })
+  }
+  console.log(contexts)
+
   if (req.body.queryResult && req.body.queryResult.intent && req.body.queryResult.intent.displayName === 'movie-intent - yes') {
     return getMoreMovieDetails(req, res)
   }
@@ -36,15 +45,8 @@ server.post('/get-movie-details', (req, res) => {
 })            
 
 const getMovieDetails = (req, res) => {
-  const movieToSearch = req.body.queryResult && req.body.queryResult.queryText && req.body.queryResult.parameters ? req.body.queryResult.parameters.movie : 'The Godfather'
-  console.log(req.body)
-  let contexts
-  if (req.body.queryResult.outputContexts) {
-    req.body.queryResult.outputContexts.forEach(element => {
-      contexts += JSON.stringify(element)
-   })
-  }
-  console.log(contexts)
+  const movieToSearch = req.body.queryResult.outputContexts[0].parameters.movie
+  
   const reqUrl = encodeURI(`http://www.omdbapi.com/?t=${movieToSearch}&apikey=${API_KEY}`)
   http.get(reqUrl, (responseFromAPI) => {
       let completeResponse = '';
@@ -87,6 +89,8 @@ const getMovieDetails = (req, res) => {
 
 const getMoreMovieDetails = (req, res) => {
 
+  req.body.queryResult.intent
+
   const movieToSearch = req.body.queryResult && req.body.queryResult.queryText && req.body.queryResult.parameters ? req.body.queryResult.parameters.movie : 'The Godfather'
       
   const reqUrl = encodeURI(`http://www.omdbapi.com/?t=${movieToSearch}&apikey=${API_KEY}`)
@@ -108,7 +112,7 @@ const getMoreMovieDetails = (req, res) => {
                 dataToSend = `I dont have any awards or rating data for ${movie.Title}`
               }
           }               
-          
+          dataToSend += '. Thank you for using this service'
           return res.json({
               "payload": {
                 "google": {
