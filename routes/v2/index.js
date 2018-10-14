@@ -56,7 +56,7 @@ const getMovieDetails = (req, res) => {
       responseFromAPI.on('end', () => {
           const movie = JSON.parse(completeResponse);
           let dataToSend = movieToSearch === 'The Godfather' ? `I don't have the required info on that. Here's some info on 'The Godfather' instead.\n` : ''
-          dataToSend += `${movie.Title} staring ${movie.Actors} is a ${movie.Genre} movie, released in ${movie.Year}. It was directed by ${movie.Director}. Would you like to know more?`
+          dataToSend += `${movie.Title} starring ${movie.Actors} is a ${movie.Genre} movie, released in ${movie.Year}. It was directed by ${movie.Director}. Would you like to know more?`
 
           return res.json({              
               "payload": {
@@ -89,8 +89,8 @@ const getMovieDetails = (req, res) => {
 
 const getMoreMovieDetails = (req, res) => {
 
-  const movieToSearch = req.body.queryResult.intent
-
+  const movieParams = req.body.queryResult.outputContexts.filter(x => x.name.includes('movie-intent-followup'))
+  const movieToSearch = movieParams[0].parameters.movie
   console.log("movie to search", movieToSearch)
   console.log(JSON.stringify(req.body.queryResult))
 
