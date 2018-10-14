@@ -8,6 +8,12 @@ import API_KEY from '../../apiKey'
 const server = express.Router({mergeParams: true})
 
 server.post('/get-movie-details', (req, res) => {
+
+  if (req.body.queryResult && req.body.queryResult.intent && req.body.queryResult.intent.displayName === 'movie-intent - yes') {
+    return getMoreMovieDetails(req, res)
+  }
+  return getMovieDetails(req, res)
+
 /*
   const req = {body: 
     { responseId: '097bac51-1d9c-475c-befa-533adf2a878d',
@@ -26,54 +32,58 @@ server.post('/get-movie-details', (req, res) => {
    }
 */
   
-  const movieToSearch = req.body.queryResult && req.body.queryResult.queryText && req.body.queryResult.parameters ? req.body.queryResult.parameters.movie : 'The Godfather'
-    console.log(req.body)
-    let contexts
-    if (req.body.queryResult.outputContexts) {
-      req.body.queryResult.outputContexts.forEach(element => {
-        contexts += element.toString()
-     })
-    }
-    console.log(contexts)
-    const reqUrl = encodeURI(`http://www.omdbapi.com/?t=${movieToSearch}&apikey=${API_KEY}`)
-    http.get(reqUrl, (responseFromAPI) => {
-        let completeResponse = '';
-        responseFromAPI.on('data', (chunk) => {
-            completeResponse += chunk;
-        });
-        responseFromAPI.on('end', () => {
-            const movie = JSON.parse(completeResponse);
-            let dataToSend = movieToSearch === 'The Godfather' ? `I don't have the required info on that. Here's some info on 'The Godfather' instead.\n` : ''
-            dataToSend += `${movie.Title} staring ${movie.Actors} is a ${movie.Genre} movie, released in ${movie.Year}. It was directed by ${movie.Director}. Would you like to know more?`
+ 
+})            
 
-            return res.json({              
-                "payload": {
-                  "google": {
-                    "expectUserResponse": true,
-                    "richResponse": {
-                      "items": [
-                        {
-                          "simpleResponse": {
-                            "textToSpeech": dataToSend,
-                            "displayText": dataToSend
-                          }
+const getMovieDetails = (req, res) => {
+  const movieToSearch = req.body.queryResult && req.body.queryResult.queryText && req.body.queryResult.parameters ? req.body.queryResult.parameters.movie : 'The Godfather'
+  console.log(req.body)
+  let contexts
+  if (req.body.queryResult.outputContexts) {
+    req.body.queryResult.outputContexts.forEach(element => {
+      contexts += JSON.stringify(element)
+   })
+  }
+  console.log(contexts)
+  const reqUrl = encodeURI(`http://www.omdbapi.com/?t=${movieToSearch}&apikey=${API_KEY}`)
+  http.get(reqUrl, (responseFromAPI) => {
+      let completeResponse = '';
+      responseFromAPI.on('data', (chunk) => {
+          completeResponse += chunk;
+      });
+      responseFromAPI.on('end', () => {
+          const movie = JSON.parse(completeResponse);
+          let dataToSend = movieToSearch === 'The Godfather' ? `I don't have the required info on that. Here's some info on 'The Godfather' instead.\n` : ''
+          dataToSend += `${movie.Title} staring ${movie.Actors} is a ${movie.Genre} movie, released in ${movie.Year}. It was directed by ${movie.Director}. Would you like to know more?`
+
+          return res.json({              
+              "payload": {
+                "google": {
+                  "expectUserResponse": true,
+                  "richResponse": {
+                    "items": [
+                      {
+                        "simpleResponse": {
+                          "textToSpeech": dataToSend,
+                          "displayText": dataToSend
                         }
-                      ]
-                    }
-                  }
-                },
-                "outputContexts": [{
-                  "name": "projects/Dialogflow-elective-MovieDBAgent/agent/sessions/testid/contexts/movie-intent-followup",
-                  "lifespanCount": 5,
-                  "parameters": {
-                    "param": "movie"
+                      }
+                    ]
                   }
                 }
-                ]
-              })
-        })
-    })
-})            
+              },
+              "outputContexts": [{
+                "name": "projects/Dialogflow-elective-MovieDBAgent/agent/sessions/testid/contexts/movie-intent-followup",
+                "lifespanCount": 5,
+                "parameters": {
+                  "param": "movie"
+                }
+              }
+              ]
+            })
+      })
+  })
+}
 
 const getMoreMovieDetails = (req, res) => {
 
