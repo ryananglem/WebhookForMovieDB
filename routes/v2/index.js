@@ -45,8 +45,9 @@ server.post('/get-movie-details', (req, res) => {
 })            
 
 const getMovieDetails = (req, res) => {
-  const movieToSearch = req.body.queryResult.outputContexts[0].parameters.movie
-  
+  const movieToSearch = req.body.queryResult.outputContexts[1].parameters.movie
+  console.log("movie to search", movieToSearch)
+  console.log(JSON.stringify(req.body.queryResult))
   const reqUrl = encodeURI(`http://www.omdbapi.com/?t=${movieToSearch}&apikey=${API_KEY}`)
   http.get(reqUrl, (responseFromAPI) => {
       let completeResponse = '';
