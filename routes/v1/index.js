@@ -2,14 +2,15 @@
 
 import express from 'express'
 import http from 'http'
-import API_KEY from '../../apiKey'
+
+import config from '../../config'
 
 const server = express.Router({mergeParams: true})
 
 server.post('/get-movie-details', (req, res) => {
 
     const movieToSearch = req.body.result && req.body.result.parameters && req.body.result.parameters.movie ? req.body.result.parameters.movie : 'The Godfather';
-    const reqUrl = encodeURI(`http://www.omdbapi.com/?t=${movieToSearch}&apikey=${API_KEY}`);
+    const reqUrl = encodeURI(`http://www.omdbapi.com/?t=${movieToSearch}&apikey=${config.movieApiKey}`);
     http.get(reqUrl, (responseFromAPI) => {
         let completeResponse = '';
         responseFromAPI.on('data', (chunk) => {
