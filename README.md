@@ -11,11 +11,17 @@ Handles both v1 and v2 of the Dialogflow API
 The Dialogflow agent is stored as a zip in the root of the repo, and can be imported into your dialogflow project. The movie-intent is described as:
 
 request: "use the test app"
+
 response: "How can I be of assistance?"
+
 request: "Give me some information on a movie <movie title>"
+  
 response: "Here is some information on <movie> would you like to know more?
+  
 request: "Yes or No"
+
 response if yes: "The ratings scores for this film were <x>"
+  
 response if no: "Ok. Thanks for using this service"
 
 
@@ -34,5 +40,5 @@ endpoints are:
 `/v2/get-movie-details`
 
 
-# Deploy
+# deploy
 [![Deploy to Heroku](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
