@@ -5,16 +5,20 @@ import http from 'http'
 
 import config from '../../config'
 
-const server = express.Router({mergeParams: true})
+const router = express.Router({mergeParams: true})
 
-server.post('/get-movie-details', (req, res) => {
+router.post('/get-movie-details', getMovieCommands)            
+
+export default router
+
+
+export function getMovieCommands (req, res, next) {  
 
   if (req.body.queryResult && req.body.queryResult.intent && req.body.queryResult.intent.displayName === 'movie-intent - yes') {
     return getMoreMovieDetails(req, res)
   }
   return getMovieDetails(req, res)
- 
-})            
+}
 
 const getMovieDetails = (req, res) => {
   const movieToSearch = req.body.queryResult && req.body.queryResult.queryText && req.body.queryResult.parameters ? req.body.queryResult.parameters.movie : 'The Godfather'
@@ -51,7 +55,7 @@ const getMovieDetails = (req, res) => {
                 "name": "projects/Dialogflow-elective-MovieDBAgent/agent/sessions/testid/contexts/movie-intent-followup",
                 "lifespanCount": 5,
                 "parameters": {
-                  "param": "movie"
+                  "param": config.dialogFlow.movieIntent.actionParameter
                 }
               }
               ]
@@ -81,7 +85,7 @@ const getMovieDetails = (req, res) => {
 
 const getMoreMovieDetails = (req, res) => {
 
-  const movieParams = req.body.queryResult.outputContexts.filter(x => x.name.includes('movie-intent-followup'))
+  const movieParams = req.body.queryResult.outputContexts.filter(x => x.name.includes(config.dialogFlow.movieIntent.outputContext))
   const movieToSearch = movieParams[0].parameters.movie
 
   const reqUrl = encodeURI(`http://www.omdbapi.com/?t=${movieToSearch}&apikey=${config.movieApiKey}`)
@@ -124,5 +128,5 @@ const getMoreMovieDetails = (req, res) => {
       })
   })
 }
-export default server
+
 
